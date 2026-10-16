@@ -1,40 +1,63 @@
 # C4 — Containers
 
-A container is something you can deploy or run: an application, a datastore, a queue. Replace every TBD once an ADR chooses the technology. Do not invent containers here before that decision.
+Deployable pieces inside CityCycle after ADRs 0001 and 0002. Battery telemetry storage from ADR 0003 is shown as a later addition.
 
 ```mermaid
 C4Container
-  title Containers for [System Name]
+  title CityCycle — containers
 
-  Person(user, "User")
+  Person(rider, "Rider")
+  Person(staff, "Operator / support")
 
-  System_Boundary(system, "[System Name]") {
-    Container(client, "Client", "TBD", "UI used by the user")
-    Container(api, "Application", "TBD", "Domain behavior and APIs")
-    ContainerDb(db, "Database", "TBD", "Persistent state")
+  System_Boundary(citycycle, "CityCycle") {
+    Container(mobile, "Mobile app", "iOS / Android", "Rider unlock and map")
+    Container(console, "Operator console", "Web", "Fill levels and trip lookup")
+    Container(api, "CityCycle API", "JVM service", "Domain logic and integrations")
+    ContainerDb(pg, "PostgreSQL", "Managed SQL", "Trips, inventory, payments")
+    ContainerDb(redis, "Redis", "Managed cache", "Availability snapshot and unlock locks")
+    ContainerDb(telemetry, "Battery telemetry store", "Time-series (later)", "e-bike battery samples")
   }
 
-  System_Ext(external, "External system")
+  System_Ext(docks, "Dock network")
+  System_Ext(payments, "Payment provider")
+  System_Ext(idp, "Identity provider")
 
-  Rel(user, client, "Uses")
-  Rel(client, api, "Calls")
-  Rel(api, db, "Reads and writes")
-  Rel(api, external, "Integrates with")
+  Rel(rider, mobile, "Uses")
+  Rel(staff, console, "Uses")
+  Rel(mobile, api, "HTTPS / JSON")
+  Rel(console, api, "HTTPS / JSON")
+  Rel(api, pg, "Reads and writes")
+  Rel(api, redis, "Reads and writes")
+  Rel(api, telemetry, "Writes samples", "after ADR 0003")
+  Rel(api, docks, "MQTT")
+  Rel(api, payments, "HTTPS")
+  Rel(api, idp, "OIDC")
 ```
 
 ```mermaid
 flowchart TB
-  user["User"]
+  rider["Rider"]
+  staff["Operator / support"]
 
-  subgraph system["[System Name]"]
-    client["Client (TBD)"]
-    api["Application (TBD)"]
-    db[("Database (TBD)")]
+  subgraph citycycle["CityCycle"]
+    mobile["Mobile app"]
+    console["Operator console"]
+    api["CityCycle API"]
+    pg[("PostgreSQL")]
+    redis[("Redis")]
+    telemetry[("Battery telemetry<br/>after ADR 0003")]
   end
 
-  external["External system"]
+  docks["Dock network"]
+  payments["Payment provider"]
+  idp["Identity provider"]
 
-  user --> client --> api
-  api --> db
-  api --> external
+  rider --> mobile --> api
+  staff --> console --> api
+  api --> pg
+  api --> redis
+  api --> telemetry
+  api --> docks
+  api --> payments
+  api --> idp
 ```

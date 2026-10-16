@@ -1,14 +1,34 @@
 # Runtime View
 
-## \<Runtime Scenario 1\>
+## Unlock a bike
 
-- *\<insert runtime diagram or textual description of the scenario\>*
+```mermaid
+sequenceDiagram
+  actor Rider
+  participant App as Mobile app
+  participant API as CityCycle API
+  participant Redis
+  participant Dock as Dock controller
+  participant PG as PostgreSQL
 
-- *\<insert description of the notable aspects of the interactions
-  between the building block instances depicted in this diagram.\>*
+  Rider->>App: Unlock bike B at station S
+  App->>API: POST /trips/unlock
+  API->>Redis: Reserve bike B (lock TTL 15s)
+  alt bike free
+    Redis-->>API: ok
+    API->>Dock: MQTT unlock B
+    Dock-->>API: unlocked
+    API->>PG: insert trip (async ok after ack)
+    API-->>App: trip started
+    App-->>Rider: bike unlocked
+  else bike taken or lock fails
+    Redis-->>API: conflict
+    API-->>App: 409 try another bike
+  end
+```
 
-## \<Runtime Scenario 2\>
+Notable aspects: the rider waits for the dock ack, not for the PostgreSQL insert to finish. Redis holds a short lock so two riders cannot take the same bike. PostgreSQL remains the ledger once the trip exists.
 
-## …​
+## Return and charge
 
-## \<Runtime Scenario n\>
+Omitted as a diagram. On dock-in, the dock emits an event; the API closes the trip in PostgreSQL, updates Redis counts, and captures payment. Failures in capture leave the trip in `pending_payment` for a retry job.

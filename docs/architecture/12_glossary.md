@@ -1,6 +1,10 @@
 # Glossary
 
-| Term         | Definition         |
-|--------------|--------------------|
-| *\<Term-1\>* | *\<definition-1\>* |
-| *\<Term-2\>* | *\<definition-2\>* |
+| Term | Definition |
+|------|------------|
+| Station | A docked location with a fixed number of slots |
+| Dock / slot | One physical lock at a station |
+| Unlock | Command that opens a dock so the rider can take the bike |
+| Trip | One rental from unlock to return |
+| Fill level | Ratio of bikes present to slots at a station |
+| Availability snapshot | Cached free-bike and free-slot counts per station, held in Redis |

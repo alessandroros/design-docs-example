@@ -1,37 +1,47 @@
 # C4 — System context
 
-Replace the placeholder names. Keep one box for your system. Everything else is a person or an external system.
-
-GitHub renders Mermaid. If a viewer does not support `C4Context`, use the flowchart below it. Same picture, plainer syntax.
+CityCycle and its neighbors. The system of interest is one box. Everything else is a person or an external system.
 
 ```mermaid
 C4Context
-  title System context for [System Name]
+  title CityCycle — system context
 
-  Person(user, "User", "Primary person who uses the system")
-  Person(operator, "Operator", "Person who configures or supports it")
+  Person(rider, "Rider", "Finds, unlocks, and returns a bike")
+  Person(operator, "Fleet operator", "Redistributes bikes across stations")
+  Person(support, "Support agent", "Looks up trips and issues refunds")
 
-  System(system, "[System Name]", "What this system is responsible for")
+  System(citycycle, "CityCycle", "Docked bike sharing for Riverside")
 
-  System_Ext(upstream, "Upstream system", "System this one depends on")
-  System_Ext(downstream, "Downstream system", "System this one calls or notifies")
+  System_Ext(docks, "Dock controller network", "Station hardware and MQTT broker")
+  System_Ext(payments, "Payment provider", "Card and wallet charges")
+  System_Ext(idp, "Identity provider", "Rider and staff login")
+  System_Ext(push, "Push notification service", "Receipts and operator alerts")
 
-  Rel(user, system, "Uses")
-  Rel(operator, system, "Administers")
-  Rel(system, upstream, "Reads from")
-  Rel(system, downstream, "Sends to")
+  Rel(rider, citycycle, "Uses", "Mobile app")
+  Rel(operator, citycycle, "Monitors stations", "Operator console")
+  Rel(support, citycycle, "Manages trips", "Operator console")
+  Rel(citycycle, docks, "Unlock commands and dock events", "MQTT")
+  Rel(citycycle, payments, "Authorize and capture", "HTTPS")
+  Rel(citycycle, idp, "Authenticates users", "OIDC")
+  Rel(citycycle, push, "Sends notifications", "HTTPS")
 ```
 
 ```mermaid
 flowchart TB
-  user["User"]
-  operator["Operator"]
-  system["[System Name]"]
-  upstream["Upstream system"]
-  downstream["Downstream system"]
+  rider["Rider"]
+  operator["Fleet operator"]
+  support["Support agent"]
+  citycycle["CityCycle"]
+  docks["Dock controller network"]
+  payments["Payment provider"]
+  idp["Identity provider"]
+  push["Push notifications"]
 
-  user -->|Uses| system
-  operator -->|Administers| system
-  system -->|Reads from| upstream
-  system -->|Sends to| downstream
+  rider -->|Mobile app| citycycle
+  operator -->|Operator console| citycycle
+  support -->|Operator console| citycycle
+  citycycle -->|MQTT| docks
+  citycycle -->|HTTPS| payments
+  citycycle -->|OIDC| idp
+  citycycle -->|HTTPS| push
 ```

@@ -1,67 +1,28 @@
-# Design docs template
+# Design docs example — CityCycle
 
-A generic, English starting point for technical design documentation of a software project. It does not invent a format. It vendors the templates teams already use, and explains when to use each one.
+A filled-in example of [design-docs-template](https://github.com/alessandroros/design-docs-template). The product is fictional. The documents are the point.
 
-| Question | Document | Where |
-|----------|----------|--------|
-| What is the system, and how is it shaped? | [arc42](https://arc42.org/) architecture documentation | [`docs/architecture/`](docs/architecture/) |
-| Why did we choose this, for good? | [MADR](https://adr.github.io/madr/) architecture decision record | [`docs/adr/`](docs/adr/) |
-| How should we build this change? | RFC / design doc | [`docs/rfc/`](docs/rfc/) |
-| How do the pieces fit, visually? | [C4](https://c4model.com/) diagrams in Mermaid | [`docs/architecture/diagrams/`](docs/architecture/diagrams/) |
+**CityCycle** is a bike-sharing service for a mid-size city. Riders unlock a bike from a station, ride, and return it. Operators restock stations. A later change adds electric bikes.
 
-Upstream files are copied in, not rewritten. See [NOTICES.md](NOTICES.md).
+This repository has no application code. It shows how architecture documentation, ADRs, and RFCs look when they are used together on a small, concrete system.
 
-## Use this repository as a template
+## Read in this order
 
-On GitHub, open this repository and choose **Use this template**.
+1. [Architecture, section 1](docs/architecture/01_introduction_and_goals.md) — what CityCycle is for, and the three quality goals that drive the design.
+2. [Context diagram](docs/architecture/diagrams/c4-context.md) and [section 3](docs/architecture/03_context_and_scope.md) — who touches the system.
+3. [Solution strategy](docs/architecture/04_solution_strategy.md) — how those quality goals become technical choices.
+4. [Container diagram](docs/architecture/diagrams/c4-containers.md) and [building blocks](docs/architecture/05_building_block_view.md) — the deployable pieces.
+5. The ADRs, in order:
+   - [0000 — use MADR](docs/adr/0000-use-markdown-architectural-decision-records.md)
+   - [0001 — PostgreSQL for trips and inventory](docs/adr/0001-postgresql-for-trips-and-inventory.md)
+   - [0002 — Redis for station availability](docs/adr/0002-redis-for-station-availability.md)
+6. [RFC 0001 — add electric bikes](docs/rfc/0001-add-electric-bikes.md) — a later change with real trade-offs.
+7. [ADR 0003](docs/adr/0003-battery-telemetry-separate-from-trip-store.md) — the decision that RFC produced.
 
-Or from the CLI:
+That sequence is the practice: map the system first, record durable choices as ADRs, propose ambiguous work as an RFC, and let an approved RFC leave new ADRs behind.
 
-```bash
-gh repo create my-project --template alessandroros/design-docs-template --private
-```
+## What this is not
 
-Then, in the new project:
-
-1. Fill [`docs/architecture/01_introduction_and_goals.md`](docs/architecture/01_introduction_and_goals.md): business goals, the top quality goals as measurable scenarios, stakeholders.
-2. Fill context, solution strategy, and the building block view (sections 3, 4, and 5). Leave the other arc42 sections empty until you have something real to write.
-3. Replace the placeholder names in the [C4 diagrams](docs/architecture/diagrams/).
-4. Keep [`docs/adr/0000-use-markdown-architectural-decision-records.md`](docs/adr/0000-use-markdown-architectural-decision-records.md). It records that this project uses MADR. Add further decisions as `0001-…`, `0002-…`.
-5. Write an RFC only when a change is ambiguous enough to need a design review.
-
-## How the three documents work together
-
-An **RFC** is a proposal. You write it before implementing, while the design can still change. Reviewers comment, the text moves, and when the work ships the RFC is history.
-
-An **ADR** is a closed decision. One question, one file, kept next to the code. You do not edit an accepted ADR to change the decision. You add a new ADR and mark the old one `superseded by ADR-NNNN`.
-
-**arc42** is the map of the system as it is. Section 9 points at the ADRs. An accepted RFC that changes the structure should update the relevant arc42 section and the C4 diagrams. The RFC does not replace the architecture document.
-
-```text
-RFC  (proposal, mutable while in review)
-  └─ may produce one or more ADRs  (immutable decisions)
-        └─ are indexed from arc42 section 9
-              └─ arc42 sections 3 and 5 stay in sync with the C4 diagrams
-```
-
-Skip the RFC when the solution is obvious and the risk is low. A ticket with acceptance criteria is enough.
-
-## What to fill first
-
-For a new system, stop after this. Do not fill all twelve arc42 sections on day one.
-
-1. Section 1 — goals and quality scenarios
-2. Section 3 — context and scope, plus the context diagram
-3. Section 4 — solution strategy, half a page
-4. Section 5 — building blocks, plus the container diagram
-5. The first real ADRs (stack, persistence, boundaries, deploy), after `0000`
-
-Add runtime, deployment, cross-cutting concepts, quality scenarios in depth, risks, and the glossary when those topics become real.
-
-## Further reading
-
-- [arc42 overview](https://arc42.org/overview/) and [section docs](https://docs.arc42.org/)
-- [MADR](https://adr.github.io/madr/)
-- [Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions), Michael Nygard
-- [The C4 model](https://c4model.com/)
-- [Design docs at Google](https://www.industrialempathy.com/posts/design-docs-at-google/), the practice this RFC shape follows
+- Not a product for Riverside, and not related to any real operator.
+- Not a complete arc42 fill-in. Sections that would be empty noise are left short on purpose.
+- Not a substitute for the template. New projects should start from [design-docs-template](https://github.com/alessandroros/design-docs-template), not from this example.

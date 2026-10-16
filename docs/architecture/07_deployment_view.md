@@ -2,29 +2,30 @@
 
 ## Infrastructure Level 1
 
-***\<Overview Diagram\>***
+```mermaid
+flowchart LR
+  riders["Riders / operators"] --> edge["CDN + WAF"]
+  edge --> app["App platform<br/>API + consoles"]
+  app --> pg["Managed PostgreSQL"]
+  app --> redis["Managed Redis"]
+  app --> mqtt["MQTT broker<br/>dock network"]
+  app --> pay["Payment provider"]
+```
 
 Motivation  
-*\<explanation in text form\>*
+One region, managed data stores, API on a container platform with two replicas. Enough for Riverside’s size; not a multi-region design.
 
 Quality and/or Performance Features  
-*\<explanation in text form\>*
+- API autoscales on CPU and unlock latency.  
+- Redis and PostgreSQL are multi-AZ in the same region.  
+- Dock MQTT is a vendor-managed broker; we treat it as an external dependency with an SLO of its own.
 
-Mapping of Building Blocks to Infrastructure  
-*\<description of the mapping\>*
+Mapping of Building Blocks to Infrastructure
 
-## Infrastructure Level 2
-
-### *\<Infrastructure Element 1\>*
-
-*\<diagram + explanation\>*
-
-### *\<Infrastructure Element 2\>*
-
-*\<diagram + explanation\>*
-
-…​
-
-### *\<Infrastructure Element n\>*
-
-*\<diagram + explanation\>*
+| Building block | Where it runs |
+|----------------|---------------|
+| Mobile app | iOS / Android stores |
+| Operator console | Static assets on CDN, talks to API |
+| CityCycle API | Container platform, 2+ replicas |
+| PostgreSQL | Managed service |
+| Redis | Managed service |
